@@ -1,0 +1,44 @@
+
+version: '3.4'
+
+networks:
+  myfitappnetwork:
+
+services:
+  webapi:
+    image: beresgabo/myfitapp_webapi:latest
+    container_name: myfitapp_api
+    build:
+      context: ./webApiFitApp
+      dockerfile: ./Dockerfile
+    ports:
+      - 5010:5010
+    depends_on:
+      - myfitappdb
+    environment:
+      - ConnectionStrings__DefaultConnection4=Data Source=myfitappdb;Initial Catalog=myfitapp;User Id=sa;Password=MyFitApp24;MultipleActiveResultSets=true;TrustServerCertificate=true
+    networks:
+      - myfitappnetwork
+
+  myfitappdb:
+    image: beresgabo/myfitapp_database:latest
+    container_name: myfitapp_db
+    ports:
+      - 1430:1433
+    environment:
+      SA_PASSWORD: "MyFitApp24"
+      ACCEPT_EULA: "Y"
+    networks:
+      - myfitappnetwork
+
+  myfitappview:
+    image: beresgabo/myfitapp_view:latest
+    container_name: myfitapp_view
+    build:
+      context: ./myFitApp
+      dockerfile: ./Dockerfile
+    ports:
+      - "4200:80"
+    networks:
+      - myfitappnetwork
+    
